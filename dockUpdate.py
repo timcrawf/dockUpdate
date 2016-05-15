@@ -5,6 +5,16 @@ import pwd
 import shutil
 import sys
 
+def errorMessage(parser): # Error message to appear if you are missing information
+    ending=lambda ending: if ending=='-f': return 'to select a file', if ending=='-g': return 'to define the group')
+    print'----ERROR----'
+    print '--Please use "%s" %s--' % (parser, ending(parser))
+    sys.exit() #Quits the script
+
+usersDir='/Users' #Set the start of the directory to have the user inserted
+delList=[] #Create empty list to add excluded users and invisible files
+delList.append('Shared') #Automaticly remove the Shared user so the program doesn't error
+
 parser=OptionParser()
 parser.add_option('-f', '--file', dest='fileName', help = 'Enter path to your new dock file.')
 parser.add_option('-e', '--excluded', dest='excludedUsers', help='Enter the names of users to exclude from the new dock.')
@@ -13,9 +23,7 @@ parser.add_option('-i', '--include', dest='includeParse', help='If you only wish
 (options, args)=parser.parse_args()
 
 if options.fileName is None:
-    print'----ERROR----'
-    print '--Please use "-f" to select a file--'
-    sys.exit()
+    errorMessage('-f')
 else:
     newFile=options.fileName
 
@@ -24,20 +32,13 @@ if options.excludedUsers is None:
 else:
     exUserPre=options.excludedUsers
     exUser=exUserPre.split(',')
-exUser.append('Shared')
 
 if options.groupParse is None:
-    print'----ERROR----'
-    print '--Please use "-g" to select group assignment-'
-    sys.exit()
+    errorMessage('-g')
 else:
     groupName=options.groupParse
-    
-delList=[]
-groupList = grp.getgrnam(groupName)
-groupNum=groupList[2]
-
-usersDir='/Users'
+    groupList = grp.getgrnam(groupName) #Uses grep to get a list for the group containing the id number
+    groupNum=groupList[2] #Retrive the group number from the list
 
 if options.includeParse is None:
     userList=os.listdir(usersDir)
@@ -52,7 +53,6 @@ if options.includeParse is None:
 else:
     userList=[options.includeParse]
     
-
 for user in userList:
     userNum=pwd.getpwnam(user)[2]
     userPath=os.path.join(usersDir, user)
