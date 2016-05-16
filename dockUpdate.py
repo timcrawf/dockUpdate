@@ -36,28 +36,26 @@ def main():
     parser.add_option('-i', '--include', dest='includeParse', help='If you only wish to update one user, enter their name in this option')
     (options, args)=parser.parse_args()
 
-    if options.fileName is None:
-        errorMessage.addError("-f", "to select a file")
+    if options.fileName is None:                                      #Checks to see if file argument was given
+        errorMessage.addError("-f", "to select a file")        #Adds error message
     else:
-        newFile=options.fileName
+        newFile=options.fileName                                     #converts newFile to local variable
 
-    if options.excludedUsers is None:
-        exUser=[]
+    if options.groupParse is None:                                  #Checks to see if group argument was given
+        errorMessage.addError("-g", "to enter the master group")     #adds error message
     else:
-        exUserPre=options.excludedUsers
-        exUser=exUserPre.split(',')
-
-    if options.groupParse is None:
-        errorMessage.addError("-g", "to enter the master group")
-    else:
-        groupName=options.groupParse
+        groupName=options.groupParse                            #conver groupName to local variable
         groupList = grp.getgrnam(groupName) #Uses grep to get a list for the group containing the id number
         groupNum=groupList[2] #Retrive the group number from the list
 
-    if errorMessage.errors != {}:
-        errorMessage.displayError()
+    if errorMessage.errors != {}:                                       # Checks for any errors
+        errorMessage.displayError()                                   # prints any errors then exits
 
-
+    if options.excludedUsers is None:                               # Checks for excluded users argument
+        exUser=[]                                                              # creates empty excluded users list
+    else:
+        exUserPre=options.excludedUsers                       #Converts string to local variable
+        exUser=exUserPre.split(',')                                  #Creates list of string split at ","
 
     if options.includeParse is None:
         userList=os.listdir(usersDir)
